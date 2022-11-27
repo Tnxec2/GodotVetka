@@ -35,18 +35,36 @@ var reached13 = preload("res://assets/reached/tile-13.png")
 var reached14 = preload("res://assets/reached/tile-14.png")
 var reached15 = preload("res://assets/reached/tile-15.png")
 
+var leaf_bottom = [	preload("res://assets/leaf/bottom-0.png"),
+					preload("res://assets/leaf/bottom-1.png"),
+					preload("res://assets/leaf/bottom-2.png")]
+var leaf_top =    [ preload("res://assets/leaf/top-0.png"),
+					preload("res://assets/leaf/top-1.png"),
+					preload("res://assets/leaf/top-2.png")]
+var leaf_left =   [ preload("res://assets/leaf/left-0.png"),
+					preload("res://assets/leaf/left-1.png"),
+					preload("res://assets/leaf/left-2.png")]
+var leaf_right =  [ preload("res://assets/leaf/right-0.png"), 
+					preload("res://assets/leaf/right-1.png"),
+					preload("res://assets/leaf/right-2.png")]
+
 
 var type: int = 0
 var reached: bool = false
-
+var can_rotate: bool = false
 
 # tiles array:
 # first element - texture unreached
 # second element - texture reached
 var tileVariants = [] 
 
+
+
+var rand = RandomNumberGenerator.new()
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	rand.randomize()
 	tileVariants.append([tile0, tile0])
 	tileVariants.append([tile1, reached1])
 	tileVariants.append([tile2, reached2])
@@ -72,6 +90,10 @@ func set_type(t: int):
 	change_texture()
 
 
+func set_can_rotate(b: bool):
+	self.can_rotate = b
+	
+
 func set_reached(reached: bool):
 	self.reached = reached
 	change_texture()
@@ -93,14 +115,59 @@ func get_height():
 
 
 func tile_rotate():
+	if ! can_rotate:
+		return
 	var new_type = Globals.rotation_types[type][Globals.rotate_direction]
 	if new_type == type:
 		return
 	set_type(new_type)
 	emit_signal("on_rotated", type)
+	
+
+func on_won():
+	var leaf_type = rand.randi() % 3
+	match type:
+		5, 7:
+			$Background/Leaf.texture = leaf_left[leaf_type]
+			$Background/Leaf.position.y += get_height() / 2 - rand.randi() % get_height()
+			$Background/Leaf.show()
+		10, 11:
+			$Background/Leaf.texture = leaf_bottom[leaf_type]
+			$Background/Leaf.position.x += get_width() / 2 - rand.randi() % get_width()
+			$Background/Leaf.show()
+		14:
+			$Background/Leaf.texture = leaf_top[leaf_type]
+			$Background/Leaf.position.x += get_width() / 2 - rand.randi() % get_width()
+			$Background/Leaf.show()
+		13:
+			$Background/Leaf.texture = leaf_right[leaf_type]
+			$Background/Leaf.position.y += get_height() / 2 - rand.randi() % get_height()
+			$Background/Leaf.show()
+	$AnimationStartTimer.start()
+
+
+func start_animation():
+	match type:
+		1:
+			$Background/FlowerAnimation.show()
+			$Background/FlowerAnimation.play("flower1")
+		2:
+			$Background/FlowerAnimation.show()
+			$Background/FlowerAnimation.play("flower2")
+		4:
+			$Background/FlowerAnimation.show()
+			$Background/FlowerAnimation.play("flower4")
+		8:
+			$Background/FlowerAnimation.show()
+			$Background/FlowerAnimation.play("flower8")
+
 
 
 func _on_Tile_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 	if event is InputEventMouseButton:
 		if event.is_pressed():
 			tile_rotate()
+
+
+func _on_AnimationStartTimer_timeout() -> void:
+	start_animation()

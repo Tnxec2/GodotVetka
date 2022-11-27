@@ -32,7 +32,7 @@ var tile = preload("res://scenes/tile.tscn")
 const tileMapSize = 11	# max tilemap size
 var start_tile = 0 # draw map from this tile
 
-var mapSize = 11			# square game field size, should be less or equal that tileMapSize
+var mapSize = 3			# square game field size, should be less or equal that tileMapSize
 var infinity = true	# game field borders are connected to each other
 
 var tileArray = [] # hold tileNodes objects for draw
@@ -58,29 +58,129 @@ var utfmap = {
 	12: '┓', 13: '┫', 14: '┳', 15: '╋'
 }
 
+const arr3 = [
+	[2, 10, 12],
+	[0, 2, 13],
+	[2, 10, 9]
+]
+
+const arr5 = [
+	[6, 10, 8],
+	[3, 10, 12],
+	[2, 10, 9]
+]
+
+const arr7 = [
+	[2, 10, 12],
+	[0, 6, 9],
+	[0, 1, 0]
+]
+
+const arr9 = [
+	[6, 10, 12],
+	[3, 10, 13],
+	[2, 10, 9]
+]
+
+const arr11 = [
+	[0, 4, 4],
+	[0, 5, 5],
+	[0, 1, 1]
+]
+
 # tile types to start cell
 var startVariants = [ 5, 7, 10, 11, 13, 14]
 
 var rand = RandomNumberGenerator.new()
 
+var game_over = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	print('randomize')
 	rand.randomize()
+	init_tile_map()
+
+
+func draw_start_screen(level: int):
+	mapSize = Globals.map_size_array[level]
+	infinity = level == 5
+	init_map()
+	draw_border()
+	draw_level_arr()
+	for y in range(mapSize):
+		for x in range(mapSize):
+			mapReached[y][x] = mapGame[y][x] > 0
+	redraw_tile_map(false)
+	mark_all_reached()
+
+
+func draw_border():
+	mapGame[0][0] = 6
+	mapGame[0][mapSize-1] = 12
+	mapGame[mapSize-1][0] = 3
+	mapGame[mapSize-1][mapSize-1] = 9
+	for y in range(1, mapSize-1):
+		if infinity:
+			mapGame[y][0] = 13
+		else:
+			mapGame[y][0] = 5
+		if infinity:
+			mapGame[y][mapSize-1] = 7
+		else:
+			mapGame[y][mapSize-1] = 5
+	for x in range(1, mapSize-1):
+		if infinity:
+			mapGame[0][x] = 11
+		else:
+			mapGame[0][x] = 10
+		if infinity:
+			mapGame[mapSize-1][x] = 14
+		else:
+			mapGame[mapSize-1][x] = 10
+
+
+func draw_level_arr():
+	var arr
+	match mapSize:
+		3:
+			arr = arr3
+		5:
+			arr = arr5
+		7:
+			arr = arr7
+		9:
+			arr = arr9
+		11:
+			arr = arr11
+		_:
+			arr = arr3
+	var start_cell = floor(mapSize / 2)-1
+	prints('level_arr', floor(mapSize / 2), start_cell)
+	for y in range(3):
+		for x in range(3):
+			mapGame[start_cell+y][start_cell+x] = arr[y][x]
+
+
+func on_run_game():
 	if mapSize < tileMapSize:
 		infinity = false
-	print('init_map')
+	print('run_game')
 	init_map()
 	fill_map()
 	print_map()
-	init_tile_map()
+	shuffle_game_map()
+	checkReached()
+	redraw_tile_map(true)
 	mark_all_reached()
 
 
 func init_map():
 	print('init_map...')
 	start_tile = ceil((tileMapSize - mapSize) / 2)
+	mapOriginal.clear()
+	mapGame.clear()
+	mapReached.clear()
 	for y in range(mapSize):
 		mapOriginal.append([])
 		mapOriginal[y]=[]
@@ -101,13 +201,33 @@ func fill_map():
 	print('fill_map...')
 	start_cell_x = floor(mapSize / 2)
 	start_cell_y = floor(mapSize / 2)
-	mapGame[start_cell_y][start_cell_x] = startVariants[rand.randi_range(0, startVariants.size()-1)]
-
-	build_map()
-	checkReached()
-	clear_unreached_tiles()
+	
+	var map_is_ok = false
+	while !map_is_ok:
+		mapGame[start_cell_y][start_cell_x] = startVariants[rand.randi_range(0, startVariants.size()-1)]
+		build_map()
+		checkReached()
+		clear_unreached_tiles()
+		map_is_ok = has_map_ends()
+		if ! map_is_ok:
+			clear_map()
 	save_map()
-	shuffle_game_map()
+
+
+func has_map_ends():
+	for y in range(mapSize):
+		for x in range(mapSize):
+			if mapGame[y][x] == 1 or mapGame[y][x] == 2 or mapGame[y][x] == 4 or mapGame[y][x] == 8:
+				return true
+	return false
+
+
+func clear_map():
+	for y in range(mapSize):
+		for x in range(mapSize):
+			mapOriginal[y][x]=0
+			mapGame[y][x]=0
+			mapReached[y][x]=false
 
 
 func build_map():
@@ -284,8 +404,29 @@ func save_map():
 
 
 func shuffle_game_map():
-	# TODO: shuffle tiles to start game
-	pass
+	for step in range(mapSize):
+		# process cells on top and bottom
+		for x in range(start_cell_x - step, start_cell_x + step):
+			if x >= 0 && x < mapSize:
+				if start_cell_y - step >= 0:
+					var arr = Globals.rotation_types[mapGame[start_cell_y - step][x]]
+					var t = rand.randi() % arr.size()
+					mapGame[start_cell_y - step][x] = arr[t]
+				if start_cell_y + step < mapSize:
+					var arr = Globals.rotation_types[mapGame[start_cell_y + step][x]]
+					var t = rand.randi() % arr.size()
+					mapGame[start_cell_y + step][x] = arr[t]
+		# process cells on left and right side
+		for y in range(start_cell_y - step, start_cell_y + step + 1):
+			if y >= 0 && y < mapSize:
+				if start_cell_x - step >= 0:
+					var arr = Globals.rotation_types[mapGame[y][start_cell_x - step]]
+					var t = rand.randi() % arr.size()
+					mapGame[y][start_cell_x - step] = arr[t]
+				if start_cell_x + step < mapSize:
+					var arr = Globals.rotation_types[mapGame[y][start_cell_x + step]]
+					var t = rand.randi() % arr.size()
+					mapGame[y][start_cell_x + step] = arr[t]
 
 
 func print_map():
@@ -330,12 +471,20 @@ func init_tile_map():
 			var t = tile.instance()
 			t.position = Vector2(draw_x, draw_y)
 			t.scale = tile_scale
-			t.connect("on_rotated", self, "_on_tile_rotated", [x-start_tile, y-start_tile])
+			t.connect("on_rotated", self, "_on_tile_rotated", [x, y])
 			tileArray[y].append([])
 			tileArray[y][x]=t
 			draw_x += tile_width * tile_scale.x
 			add_child(t)
 		draw_y += tile_height * tile_scale.y
+
+
+func redraw_tile_map(can_rotate: bool):
+	print('redraw_tile_map...')
+
+	for y in range(tileMapSize):
+		for x in range(tileMapSize):
+			tileArray[y][x].set_can_rotate(can_rotate)
 
 	for y in range(mapSize):
 		for x in range(mapSize):
@@ -343,9 +492,9 @@ func init_tile_map():
 
 
 func _on_tile_rotated(type: int, x, y):
-	prints('_on_tile_rotated', mapGame[y][x], type, x, y)
-	# TODO test all tiles of reached
-	mapGame[y][x] = type
+	prints('_on_tile_rotated', mapGame[y-start_tile][x-start_tile], type, x-start_tile, y-start_tile)
+
+	mapGame[y-start_tile][x-start_tile] = type
 	checkReached()
 	mark_all_reached()
 	
@@ -415,5 +564,8 @@ func is_all_connected():
 
 
 func won():
+	game_over = true
 	prints('You won!')
-	pass
+	for y in range(tileMapSize):
+		for x in range(tileMapSize):
+			tileArray[y][x].on_won()

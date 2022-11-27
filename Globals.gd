@@ -1,5 +1,8 @@
 extends Node
 
+var level = 0 # 0-5, 5 - infinity 
+var map_size_array = [3, 5, 7, 9, 11, 11]
+
 # rotate_direction
 # 0 - clockwise, 1 - counter clockwise
 var rotate_direction = 1 
