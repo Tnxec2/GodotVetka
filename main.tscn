@@ -47,25 +47,38 @@ font_data = SubResource( 5 )
 script = ExtResource( 6 )
 
 [node name="Sky1" type="Sprite" parent="."]
-position = Vector2( 512, 300 )
-scale = Vector2( 0.55, 0.526667 )
+position = Vector2( 480, 320 )
+scale = Vector2( 0.516667, 0.56 )
 texture = ExtResource( 1 )
 
-[node name="Map" type="Node2D" parent="."]
+[node name="ViewportContainer" type="ViewportContainer" parent="."]
+margin_left = 146.0
+margin_right = 960.0
+margin_bottom = 640.0
+mouse_filter = 2
+stretch = true
+
+[node name="Viewport" type="Viewport" parent="ViewportContainer"]
+size = Vector2( 814, 640 )
+transparent_bg = true
+handle_input_locally = false
+physics_object_picking = true
+
+[node name="Map" type="Node2D" parent="ViewportContainer/Viewport"]
 script = ExtResource( 2 )
 
 [node name="UI" type="Control" parent="."]
-margin_right = 1024.0
-margin_bottom = 600.0
+margin_right = 960.0
+margin_bottom = 640.0
 mouse_filter = 2
 
 [node name="ButtonLevel" type="Button" parent="UI"]
 anchor_top = 1.0
 anchor_bottom = 1.0
 margin_left = 24.0
-margin_top = -88.0
-margin_right = 128.0
-margin_bottom = -24.0
+margin_top = -232.0
+margin_right = 132.0
+margin_bottom = -168.0
 mouse_default_cursor_shape = 2
 custom_colors/font_color_disabled = Color( 1, 1, 1, 1 )
 custom_colors/font_color_focus = Color( 1, 1, 1, 1 )
@@ -81,12 +94,10 @@ shortcut_in_tooltip = false
 text = "level"
 
 [node name="ButtonCancel" type="Button" parent="UI"]
-anchor_top = 1.0
-anchor_bottom = 1.0
 margin_left = 24.0
-margin_top = -576.0
-margin_right = 128.0
-margin_bottom = -512.0
+margin_top = 24.0
+margin_right = 132.0
+margin_bottom = 88.0
 mouse_default_cursor_shape = 2
 custom_colors/font_color_disabled = Color( 1, 1, 1, 1 )
 custom_colors/font_color_focus = Color( 1, 1, 1, 1 )
@@ -106,10 +117,10 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -128.0
-margin_top = -88.0
-margin_right = -24.0
-margin_bottom = -24.0
+margin_left = -936.0
+margin_top = -136.0
+margin_right = -828.0
+margin_bottom = -28.0
 mouse_default_cursor_shape = 2
 custom_colors/font_color_disabled = Color( 1, 1, 1, 1 )
 custom_colors/font_color_focus = Color( 1, 1, 1, 1 )
@@ -148,10 +159,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -264.0
-margin_top = -142.0
-margin_right = 264.0
-margin_bottom = 142.0
+margin_left = -176.0
+margin_top = -136.0
+margin_right = 352.0
+margin_bottom = 148.0
 texture = ExtResource( 3 )
 patch_margin_left = 10
 patch_margin_top = 10
@@ -214,7 +225,17 @@ custom_styles/normal = ExtResource( 15 )
 shortcut_in_tooltip = false
 text = "resume"
 
-[connection signal="show_game_over_popup" from="Map" to="." method="_on_Map_show_game_over_popup"]
+[node name="LabelDebug" type="Label" parent="UI"]
+visible = false
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -20.0
+custom_fonts/font = ExtResource( 8 )
+text = "test"
+align = 2
+
+[connection signal="show_game_over_popup" from="ViewportContainer/Viewport/Map" to="." method="_on_Map_show_game_over_popup"]
 [connection signal="pressed" from="UI/ButtonLevel" to="." method="_on_ButtonLevel_pressed"]
 [connection signal="pressed" from="UI/ButtonCancel" to="." method="_on_ButtonCancel_pressed"]
 [connection signal="pressed" from="UI/ButtonRun" to="." method="_on_ButtonRun_pressed"]

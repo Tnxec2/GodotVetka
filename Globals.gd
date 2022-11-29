@@ -29,6 +29,7 @@ const rotation_types = [
 		[15, 15]	# 15
 ]
 
+# tile types for initial random shuffle
 const shuffle_types = [
 	[0],				# 0
 	[2, 4, 8],		# 1

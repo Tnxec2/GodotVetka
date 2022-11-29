@@ -451,7 +451,7 @@ func init_tile_map():
 	width = tileMapSize * tile_width * tile_scale.x
 	height = tileMapSize * tile_height * tile_scale.y
 	
-	var window_size = get_viewport().size
+	var window_size = get_viewport_rect().size
 	
 	tile_scale.x = min(window_size.y / height, window_size.x / width)
 	tile_scale.y = tile_scale.x
@@ -459,8 +459,10 @@ func init_tile_map():
 	width = tileMapSize * tile_width * tile_scale.x
 	height = tileMapSize * tile_height * tile_scale.y
 	
-	position.x = (window_size.x - self.width) / 2 + (tile_width*tile_scale.x) / 2
+	position.x = window_size.x - self.width + (tile_width*tile_scale.x)/2# (window_size.x - self.width) / 2 + (tile_width*tile_scale.x) / 2
 	position.y = (window_size.y - self.height) / 2 + (tile_height*tile_scale.y) / 2
+	
+	prints( window_size, width, position)
 	
 	var draw_y = 0.0
 		
@@ -487,6 +489,7 @@ func redraw_tile_map(can_rotate: bool):
 	for y in range(tileMapSize):
 		for x in range(tileMapSize):
 			tileArray[y][x].set_can_rotate(can_rotate)
+			tileArray[y][x].set_type(0)
 
 	for y in range(mapSize):
 		for x in range(mapSize):
@@ -578,15 +581,14 @@ func won():
 
 
 func cancel_game():
-	game_over = true
 	print("Game canceled")
 	for y in range(tileMapSize):
 		for x in range(tileMapSize):
 			tileArray[y][x].can_rotate = false
 	emit_signal("show_game_over_popup")
 
+
 func resume_game():
-	game_over = false
 	print("Game resumed")
 	for y in range(tileMapSize):
 		for x in range(tileMapSize):
