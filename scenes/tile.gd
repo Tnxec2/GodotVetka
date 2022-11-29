@@ -1,6 +1,7 @@
 extends Node2D
 
 signal on_rotated(type)
+signal on_clicked(type)
 
 var tile0 = preload("res://assets/tile-0.png")
 var tile1 = preload("res://assets/unreached/tile-1.png")
@@ -58,7 +59,7 @@ var can_rotate: bool = false
 # second element - texture reached
 var tileVariants = [] 
 
-
+var game_over = false
 
 var rand = RandomNumberGenerator.new()
 
@@ -125,6 +126,8 @@ func tile_rotate():
 	
 
 func on_won():
+	game_over = true
+	can_rotate = false
 	var leaf_type = rand.randi() % 3
 	match type:
 		5, 7:
@@ -143,10 +146,11 @@ func on_won():
 			$Background/Leaf.texture = leaf_right[leaf_type]
 			$Background/Leaf.position.y += get_height() / 2 - rand.randi() % get_height()
 			$Background/Leaf.show()
-	$AnimationStartTimer.start()
+	$FlowerAnimationStartTimer.wait_time = rand.randf_range(1, 3)
+	$FlowerAnimationStartTimer.start()
 
 
-func start_animation():
+func start_flower_animation():
 	match type:
 		1:
 			$Background/FlowerAnimation.show()
@@ -162,12 +166,14 @@ func start_animation():
 			$Background/FlowerAnimation.play("flower8")
 
 
-
 func _on_Tile_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 	if event is InputEventMouseButton:
 		if event.is_pressed():
-			tile_rotate()
+			if game_over:
+				emit_signal("on_clicked")
+			else:
+				tile_rotate()
 
 
-func _on_AnimationStartTimer_timeout() -> void:
-	start_animation()
+func _on_FlowerAnimationStartTimer_timeout() -> void:
+	start_flower_animation()

@@ -26,6 +26,7 @@ extends Node2D
 # TODO: win screen, new game functionality and cancel game functionality with solutin showing
 # 
 
+signal show_game_over_popup()
 
 var tile = preload("res://scenes/tile.tscn")
 
@@ -472,6 +473,7 @@ func init_tile_map():
 			t.position = Vector2(draw_x, draw_y)
 			t.scale = tile_scale
 			t.connect("on_rotated", self, "_on_tile_rotated", [x, y])
+			t.connect("on_clicked", self, "_on_tile_clicked")
 			tileArray[y].append([])
 			tileArray[y][x]=t
 			draw_x += tile_width * tile_scale.x
@@ -492,14 +494,16 @@ func redraw_tile_map(can_rotate: bool):
 
 
 func _on_tile_rotated(type: int, x, y):
-	prints('_on_tile_rotated', mapGame[y-start_tile][x-start_tile], type, x-start_tile, y-start_tile)
-
 	mapGame[y-start_tile][x-start_tile] = type
 	checkReached()
 	mark_all_reached()
-	
 	if is_all_tiles_reached() && is_all_connected():
 		won()
+
+
+func _on_tile_clicked():
+	if game_over:
+		emit_signal("show_game_over_popup")
 
 
 func mark_all_reached():
@@ -564,8 +568,26 @@ func is_all_connected():
 
 
 func won():
+	if game_over:
+		return
 	game_over = true
 	prints('You won!')
 	for y in range(tileMapSize):
 		for x in range(tileMapSize):
 			tileArray[y][x].on_won()
+
+
+func cancel_game():
+	game_over = true
+	print("Game canceled")
+	for y in range(tileMapSize):
+		for x in range(tileMapSize):
+			tileArray[y][x].can_rotate = false
+	emit_signal("show_game_over_popup")
+
+func resume_game():
+	game_over = false
+	print("Game resumed")
+	for y in range(tileMapSize):
+		for x in range(tileMapSize):
+			tileArray[y][x].can_rotate = true

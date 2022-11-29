@@ -180,9 +180,9 @@ animation = "flower1"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 1 )
 
-[node name="AnimationStartTimer" type="Timer" parent="."]
+[node name="FlowerAnimationStartTimer" type="Timer" parent="."]
 wait_time = 3.0
 one_shot = true
 
 [connection signal="input_event" from="." to="." method="_on_Tile_input_event"]
-[connection signal="timeout" from="AnimationStartTimer" to="." method="_on_AnimationStartTimer_timeout"]
+[connection signal="timeout" from="FlowerAnimationStartTimer" to="." method="_on_FlowerAnimationStartTimer_timeout"]
