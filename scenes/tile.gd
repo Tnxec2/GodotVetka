@@ -95,8 +95,8 @@ func set_can_rotate(b: bool):
 	self.can_rotate = b
 	
 
-func set_reached(reached: bool):
-	self.reached = reached
+func set_reached(_reached: bool):
+	self.reached = _reached
 	change_texture()
 
 
@@ -166,7 +166,7 @@ func start_flower_animation():
 			$Background/FlowerAnimation.play("flower8")
 
 
-func _on_Tile_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
+func _on_Tile_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton:
 		if event.is_pressed():
 			if game_over:

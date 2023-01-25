@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://scenes/game.gd" type="Script" id=1]
+[ext_resource path="res://scenes/Map.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/UI.tscn" type="PackedScene" id=3]
+[ext_resource path="res://assets/sky1.png" type="Texture" id=4]
+
+[node name="Game" type="Node2D"]
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_vertical_guides_": [ 160.0 ]
+}
+
+[node name="Sky" type="Sprite" parent="."]
+position = Vector2( 952, 592 )
+texture = ExtResource( 4 )
+
+[node name="Map" parent="." instance=ExtResource( 2 )]
+position = Vector2( 160, 0 )
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_right = 160.0
+margin_bottom = 640.0
+color = Color( 0.176471, 0.176471, 0.176471, 0.827451 )
+
+[node name="UI" parent="." instance=ExtResource( 3 )]
+
+[connection signal="show_game_over_popup" from="Map" to="." method="_on_Map_show_game_over_popup"]
+[connection signal="cancel_pressed" from="UI" to="." method="_on_UI_cancel_pressed"]
+[connection signal="level_pressed" from="UI" to="." method="_on_UI_level_pressed"]
+[connection signal="new_game_pressed" from="UI" to="." method="_on_UI_new_game_pressed"]
+[connection signal="resume_pressed" from="UI" to="." method="_on_UI_resume_pressed"]
+[connection signal="run_pressed" from="UI" to="." method="_on_UI_run_pressed"]

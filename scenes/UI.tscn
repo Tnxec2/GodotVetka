@@ -1,0 +1,245 @@
+[gd_scene load_steps=20 format=2]
+
+[ext_resource path="res://textures/font_button_yellow.tres" type="DynamicFont" id=1]
+[ext_resource path="res://textures/button_red_normal.tres" type="StyleBox" id=2]
+[ext_resource path="res://textures/button_yellow_normal.tres" type="StyleBox" id=3]
+[ext_resource path="res://textures/button_red_pressed.tres" type="StyleBox" id=4]
+[ext_resource path="res://textures/font_button_blue.tres" type="DynamicFont" id=5]
+[ext_resource path="res://textures/button_blue_normal.tres" type="StyleBox" id=6]
+[ext_resource path="res://textures/button_yellow_pressed.tres" type="StyleBox" id=7]
+[ext_resource path="res://textures/font_button_green.tres" type="DynamicFont" id=8]
+[ext_resource path="res://textures/button_green_pressed.tres" type="StyleBox" id=9]
+[ext_resource path="res://assets/ui/yellow_panel.png" type="Texture" id=10]
+[ext_resource path="res://textures/button_blue_pressed.tres" type="StyleBox" id=11]
+[ext_resource path="res://textures/button_green_normal.tres" type="StyleBox" id=12]
+
+[sub_resource type="GDScript" id=7]
+script/source = "extends Control
+
+signal cancel_pressed()
+signal resume_pressed()
+signal level_pressed()
+signal run_pressed()
+signal new_game_pressed()
+
+func _on_ButtonLevel_pressed() -> void:
+	emit_signal(\"level_pressed\")
+
+
+func _on_ButtonCancel_pressed() -> void:
+	emit_signal(\"cancel_pressed\")
+
+
+func _on_ButtonRun_pressed() -> void:
+	emit_signal(\"run_pressed\")
+
+
+func _on_ButtonNewGame_pressed() -> void:
+	emit_signal(\"new_game_pressed\")
+
+
+func _on_ButtonResume_pressed() -> void:
+	emit_signal(\"resume_pressed\")
+"
+
+[sub_resource type="DynamicFontData" id=1]
+font_path = "res://assets/ui/kenvector_future.ttf"
+
+[sub_resource type="DynamicFont" id=2]
+size = 17
+outline_size = 2
+outline_color = Color( 1, 0.560784, 0, 1 )
+font_data = SubResource( 1 )
+
+[sub_resource type="DynamicFontData" id=3]
+font_path = "res://assets/ui/kenvector_future.ttf"
+
+[sub_resource type="DynamicFont" id=4]
+size = 64
+outline_size = 2
+font_data = SubResource( 3 )
+
+[sub_resource type="DynamicFontData" id=5]
+font_path = "res://assets/ui/Gameplay.ttf"
+
+[sub_resource type="DynamicFont" id=6]
+size = 44
+outline_size = 2
+outline_color = Color( 1, 0.560784, 0, 1 )
+extra_spacing_char = 3
+font_data = SubResource( 5 )
+
+[node name="UI" type="Control"]
+margin_right = 960.0
+margin_bottom = 640.0
+mouse_filter = 2
+script = SubResource( 7 )
+
+[node name="ButtonLevel" type="Button" parent="."]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 24.0
+margin_top = -272.0
+margin_right = 132.0
+margin_bottom = -164.0
+mouse_default_cursor_shape = 2
+custom_colors/font_color_disabled = Color( 1, 1, 1, 1 )
+custom_colors/font_color_focus = Color( 1, 1, 1, 1 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
+custom_colors/font_color_pressed = Color( 1, 1, 1, 1 )
+custom_fonts/font = ExtResource( 1 )
+custom_styles/hover = ExtResource( 3 )
+custom_styles/pressed = ExtResource( 7 )
+custom_styles/disabled = ExtResource( 3 )
+custom_styles/normal = ExtResource( 3 )
+shortcut_in_tooltip = false
+text = "level"
+
+[node name="ButtonCancel" type="Button" parent="."]
+margin_left = 24.0
+margin_top = 24.0
+margin_right = 132.0
+margin_bottom = 132.0
+mouse_default_cursor_shape = 2
+custom_colors/font_color_disabled = Color( 1, 1, 1, 1 )
+custom_colors/font_color_focus = Color( 1, 1, 1, 1 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
+custom_colors/font_color_pressed = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 2 )
+custom_styles/hover = ExtResource( 2 )
+custom_styles/pressed = ExtResource( 4 )
+custom_styles/disabled = ExtResource( 2 )
+custom_styles/normal = ExtResource( 2 )
+shortcut_in_tooltip = false
+text = "cancel"
+
+[node name="ButtonRun" type="Button" parent="."]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -936.0
+margin_top = -136.0
+margin_right = -828.0
+margin_bottom = -28.0
+mouse_default_cursor_shape = 2
+custom_colors/font_color_disabled = Color( 1, 1, 1, 1 )
+custom_colors/font_color_focus = Color( 1, 1, 1, 1 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
+custom_colors/font_color_pressed = Color( 1, 1, 1, 1 )
+custom_fonts/font = ExtResource( 8 )
+custom_styles/hover = ExtResource( 12 )
+custom_styles/pressed = ExtResource( 9 )
+custom_styles/disabled = ExtResource( 12 )
+custom_styles/normal = ExtResource( 12 )
+shortcut_in_tooltip = false
+text = "run"
+
+[node name="Label" type="Label" parent="."]
+visible = false
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_top = -36.0
+margin_bottom = 36.0
+mouse_filter = 1
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_outline_modulate = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 4 )
+text = "3"
+align = 1
+
+[node name="GameOverPopupDialog" type="Popup" parent="."]
+visible = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="TextureRect" type="NinePatchRect" parent="GameOverPopupDialog"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -176.0
+margin_top = -136.0
+margin_right = 352.0
+margin_bottom = 148.0
+texture = ExtResource( 10 )
+patch_margin_left = 10
+patch_margin_top = 10
+patch_margin_right = 10
+patch_margin_bottom = 10
+
+[node name="Label" type="Label" parent="GameOverPopupDialog/TextureRect"]
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_top = -62.0
+margin_bottom = -9.0
+custom_fonts/font = SubResource( 6 )
+text = "cancel game"
+align = 1
+
+[node name="ButtonNewGame" type="Button" parent="GameOverPopupDialog/TextureRect"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -232.0
+margin_top = -108.0
+margin_right = -69.0
+margin_bottom = -28.0
+mouse_default_cursor_shape = 2
+custom_colors/font_color_disabled = Color( 1, 1, 1, 1 )
+custom_colors/font_color_focus = Color( 1, 1, 1, 1 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
+custom_colors/font_color_pressed = Color( 1, 1, 1, 1 )
+custom_fonts/font = ExtResource( 1 )
+custom_styles/hover = ExtResource( 2 )
+custom_styles/pressed = ExtResource( 9 )
+custom_styles/disabled = ExtResource( 2 )
+custom_styles/normal = ExtResource( 2 )
+shortcut_in_tooltip = false
+text = "new game"
+
+[node name="ButtonResume" type="Button" parent="GameOverPopupDialog/TextureRect"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = 72.0
+margin_top = -108.0
+margin_right = 235.0
+margin_bottom = -28.0
+mouse_default_cursor_shape = 2
+custom_colors/font_color_disabled = Color( 1, 1, 1, 1 )
+custom_colors/font_color_focus = Color( 1, 1, 1, 1 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
+custom_colors/font_color_pressed = Color( 1, 1, 1, 1 )
+custom_fonts/font = ExtResource( 5 )
+custom_styles/hover = ExtResource( 6 )
+custom_styles/pressed = ExtResource( 11 )
+custom_styles/disabled = ExtResource( 6 )
+custom_styles/normal = ExtResource( 6 )
+shortcut_in_tooltip = false
+text = "resume"
+
+[node name="LabelDebug" type="Label" parent="."]
+visible = false
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -20.0
+custom_fonts/font = ExtResource( 8 )
+text = "test"
+align = 2
+
+[connection signal="pressed" from="ButtonLevel" to="." method="_on_ButtonLevel_pressed"]
+[connection signal="pressed" from="ButtonCancel" to="." method="_on_ButtonCancel_pressed"]
+[connection signal="pressed" from="ButtonRun" to="." method="_on_ButtonRun_pressed"]
+[connection signal="pressed" from="GameOverPopupDialog/TextureRect/ButtonNewGame" to="." method="_on_ButtonNewGame_pressed"]
+[connection signal="pressed" from="GameOverPopupDialog/TextureRect/ButtonResume" to="." method="_on_ButtonResume_pressed"]

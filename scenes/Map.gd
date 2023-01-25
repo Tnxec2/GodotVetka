@@ -26,7 +26,7 @@ extends Node2D
 # TODO: win screen, new game functionality and cancel game functionality with solutin showing
 # 
 
-signal show_game_over_popup()
+signal show_game_over_popup(won)
 
 var tile = preload("res://scenes/tile.tscn")
 
@@ -95,6 +95,7 @@ var startVariants = [ 5, 7, 10, 11, 13, 14]
 var rand = RandomNumberGenerator.new()
 
 var game_over = false
+var won = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -459,7 +460,9 @@ func init_tile_map():
 	width = tileMapSize * tile_width * tile_scale.x
 	height = tileMapSize * tile_height * tile_scale.y
 	
-	position.x = window_size.x - self.width + (tile_width*tile_scale.x)/2# (window_size.x - self.width) / 2 + (tile_width*tile_scale.x) / 2
+	
+	#position.x = window_size.x - self.width + (tile_width*tile_scale.x)/2
+	position.x = (window_size.x + position.x - self.width) / 2 + (tile_width*tile_scale.x) / 2
 	position.y = (window_size.y - self.height) / 2 + (tile_height*tile_scale.y) / 2
 	
 	prints( window_size, width, position)
@@ -501,12 +504,12 @@ func _on_tile_rotated(type: int, x, y):
 	checkReached()
 	mark_all_reached()
 	if is_all_tiles_reached() && is_all_connected():
-		won()
+		win()
 
 
 func _on_tile_clicked():
 	if game_over:
-		emit_signal("show_game_over_popup")
+		emit_signal("show_game_over_popup", won)
 
 
 func mark_all_reached():
@@ -570,11 +573,12 @@ func is_all_connected():
 	return true
 
 
-func won():
+func win():
 	if game_over:
 		return
-	game_over = true
 	prints('You won!')
+	game_over = true
+	won = true
 	for y in range(tileMapSize):
 		for x in range(tileMapSize):
 			tileArray[y][x].on_won()
@@ -585,7 +589,7 @@ func cancel_game():
 	for y in range(tileMapSize):
 		for x in range(tileMapSize):
 			tileArray[y][x].can_rotate = false
-	emit_signal("show_game_over_popup")
+	emit_signal("show_game_over_popup", won)
 
 
 func resume_game():

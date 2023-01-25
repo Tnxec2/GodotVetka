@@ -1,5 +1,7 @@
 extends Node
 
+const SETTINGS_FILE_NAME = "user://game-data.json"
+
 var level = 0 # 0-5, 5 - infinity 
 var map_size_array = [3, 5, 7, 9, 11, 11]
 
@@ -48,3 +50,30 @@ const shuffle_types = [
 	[7, 11, 13],	# 14
 	[15]
 ]
+
+
+func save_settings():
+	var file = File.new()
+	file.open(SETTINGS_FILE_NAME, File.WRITE)
+	file.store_string(to_json({
+		"level": Globals.level
+	}))
+	file.close()
+
+
+func load_settings():
+	var file = File.new()
+	if file.file_exists(SETTINGS_FILE_NAME):
+		file.open(SETTINGS_FILE_NAME, File.READ)
+		var data = parse_json(file.get_as_text())
+		file.close()
+		if typeof(data) == TYPE_DICTIONARY:
+			prints(data.level, typeof(data.level), TYPE_REAL, (typeof(data.level) == TYPE_REAL))
+			if typeof(data.level) == TYPE_REAL and data.level >= 0 and data.level <= 5:
+				Globals.level = data.level
+			else:
+				printerr("Corrupted data! Bad saved level!")
+		else:
+			printerr("Corrupted data!")
+	else:
+		printerr("No saved data!")
